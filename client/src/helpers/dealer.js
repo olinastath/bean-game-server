@@ -1,10 +1,14 @@
 import Card from './card';
 
+let toggleDisplay = function(element) {
+    element.style.display !== 'none' ? element.style.display = 'none' : element.style.display = 'block';
+}
+
 export default class Dealer {
     constructor(scene) {
         this.dealCards = function(deck) {
             let beanName;
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < 5; i++) {
                 beanName = deck[0];
                 deck.splice(0, 1);
 
@@ -41,13 +45,22 @@ export default class Dealer {
             scene.coinCount = scene.add.text(window.innerWidth - 125, 150, [scene.player.coins]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
 
             scene.dashboard = scene.add.dom(window.innerWidth - 150, window.innerHeight / 2).setOrigin(0.5).createFromCache('dashboard');
-            // scene.dashboard.getChildByID('endTurnButton').addEventListener('click', function() {
-            //     scene.socket.emit('endTurn', scene.player.order);
-            // });
 
-            // scene.dashboard.getChildByID('harvestFieldButton').addEventListener('click', function() {
+            scene.dashboard.getChildByID('harvestFieldButton').addEventListener('click', function() {
+                toggleDisplay(scene.dashboard.getChildByID('harvestFieldButton'));
+                toggleDisplay(scene.dashboard.getChildByID('leftFieldButton'));
+                toggleDisplay(scene.dashboard.getChildByID('rightFieldButton'));
+            });
 
-            // });
+            scene.dashboard.getChildByID('leftFieldButton').addEventListener('click', function() {
+                console.log('harvest left field');
+                scene.harvest.harvestField(scene.player.fields[0]);
+            });
+
+            scene.dashboard.getChildByID('rightFieldButton').addEventListener('click', function() {
+                console.log('harvest right field');
+                scene.harvest.harvestField(scene.player.fields[1]);
+            });
             
             // other players' fields
             let i = 0;

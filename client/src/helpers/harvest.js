@@ -1,6 +1,52 @@
 export default class Harvest {
     constructor(scene) {
         this.harvestField = (field) => {
+            scene.harvestPopup = scene.add.dom(window.innerWidth / 2, window.innerHeight / 2).setOrigin(0.5).createFromCache('harvestPopup');
+            console.log(field);
+            // setTimeout(function(){ scene.harvestPopup.destroy(); }, 5000);
+            let harvestNumbers = harvestNumbersByBeanType[field.fieldType];
+            if (harvestNumbers) {
+                console.log(harvestNumbers);
+                if (harvestNumbers[field.cards]) {
+                    console.log('coins to get: ' + harvestNumbers[field.cards]);
+                } else {
+                    console.log('not a perfect number');
+                    let harvestKeys = Object.keys(harvestNumbers);
+                    console.log(harvestKeys);
+                    if (field.cards < harvestKeys[0]) {
+                        console.log('can only discard, no coins');
+                    } else {
+                        let maxHarvest = -1;
+                        for (let num in harvestKeys) {
+                            console.log(num);
+                            console.log(parseInt(num, 10));
+                            if (field.cards < parseInt(num, 10)) {
+                                maxHarvest = parseInt(num, 10);
+                                break;
+                            }
+                        }
+
+                        // coins to receive is harvestNumbers[maxHarvest] 
+                        // and then we have field.cards % maxHarvest cards left in the field
+                        console.log(maxHarvest);
+                        console.log(harvestNumbers[maxHarvest]);
+                        console.log(field.cards % maxHarvest);
+                    }
+
+                    // get modulo
+                    // get list of keys from harvestNumbers and find which one is the first to go over
+                }
+            } else {
+                console.log('field is empty');
+            }
+
+            // need to update general coin counter, counterText for field, if discarding fully then destroy images
+            // also need to delete game object? are the game objects pushed somewhere?l
+            // cards: 3
+            // counterText: Text {_events: Events, _eventsCount: 0, scene: Game, type: "Text", state: 0, …}
+            // fieldType: "chiliBean"
+            // x: 50
+            // y: 349
         }
     }
 }

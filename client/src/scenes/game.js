@@ -1,6 +1,7 @@
 import Zone from '../helpers/zone';
 import Dealer from '../helpers/dealer';
 import Turn from '../helpers/turn';
+import Harvest from '../helpers/harvest'
 import io from 'socket.io-client';
 
 const getPlayersExcept = function(playersObject, playerToExclude) {
@@ -44,6 +45,7 @@ export default class Game extends Phaser.Scene {
 
         this.load.html('nameform', 'src/assets/html/name-form.html');
         this.load.html('dashboard', 'src/assets/html/dashboard.html');
+        this.load.html('harvestPopup', 'src/assets/html/harvest-popup.html');
 
     }
 
@@ -57,6 +59,7 @@ export default class Game extends Phaser.Scene {
         this.zone = new Zone(this);
         this.dealer = new Dealer(this);
         this.turn = new Turn(this);
+        this.harvest = new Harvest(this);
 
         this.player = {
             name: '',
@@ -164,14 +167,10 @@ export default class Game extends Phaser.Scene {
             self.phase = 0;
             if (self.otherPlayers[playerId]) {
                 self.playerTurn = self.otherPlayers[playerId];
-                document.getElementById('dashboardOtherTurn').style.display = 'block';
-                document.getElementById('dashboardPlayerTurn').style.display = 'none';
                 document.querySelector('#dashboard h1').innerHTML = self.playerTurn.name + '\'s turn';
                 document.querySelector('#dashboard h1').style.color = '#ffffff';
             } else {
                 self.playerTurn = self.player;
-                document.getElementById('dashboardPlayerTurn').style.display = 'block';
-                document.getElementById('dashboardOtherTurn').style.display = 'none';
                 document.querySelector('#dashboard h1').innerHTML = 'YOUR TURN';
                 document.querySelector('#dashboard h1').style.color = '#fad550';
             }

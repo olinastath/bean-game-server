@@ -57,11 +57,11 @@
       }
 
       /* DASHBOARD */
-      #dashboard {
+      #dashboard, #harvestPopup {
         text-align: center;
       }
 
-      #dashboard button {
+      #dashboard button, .harvestButton {
         background: rgba(250, 213, 80, 0.8);
         border: 2px solid #fad550;
         border-radius: 20px;
@@ -74,13 +74,30 @@
         margin: 5px 0;
       }
 
-      #dashboard button:hover {
+      #dashboard button:hover, .harvestButton:hover {
         background: #fad550;
       }
 
       .turnWrapper {
         width: 100%;
         list-style: none;
+      }
+
+      /* HARVEST POPUP */
+      #harvestPopup {
+        background: rgba(255, 255, 255, 0.95);
+        width: 350px;
+        padding: 20px 0;
+      }
+
+      #harvestPopup p {
+        padding: 10px;
+        color: black;
+        font-size: 20px;
+      }
+
+      .harvestButton {
+        width: 100px;
       }
       </style>
     <meta charset="utf-8">
