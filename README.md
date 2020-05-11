@@ -4,7 +4,7 @@ Please don't sue me I just love your game so much.
 
 The repo contains both the server and the client. The client was created using the [Phaser 3 Project Template](https://github.com/photonstorm/phaser3-project-template.git).
 
-## Instalation
+## Installation
 On home directory, run `npm install`. Then, `cd client` and run `npm install` as well.
 
 ## Running the project
