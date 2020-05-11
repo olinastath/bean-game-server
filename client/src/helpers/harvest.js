@@ -3,7 +3,6 @@ export default class Harvest {
         this.harvestField = (field) => {
             scene.harvestPopup = scene.add.dom(window.innerWidth / 2, window.innerHeight / 2).setOrigin(0.5).createFromCache('harvestPopup');
             console.log(field);
-            // setTimeout(function(){ scene.harvestPopup.destroy(); }, 5000);
             let harvestNumbers = harvestNumbersByBeanType[field.fieldType];
             if (harvestNumbers) {
                 console.log(harvestNumbers);
@@ -39,6 +38,8 @@ export default class Harvest {
             } else {
                 console.log('field is empty');
             }
+
+            scene.harvestPopup.destroy();
 
             // need to update general coin counter, counterText for field, if discarding fully then destroy images
             // also need to delete game object? are the game objects pushed somewhere?l
