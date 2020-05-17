@@ -43,7 +43,7 @@ export default class Turn {
             // if at least one field is empty, pick the first empty one and fill it
             // if not empty, check if one of them has the fieldtype
             for (let field in playerFields) {
-                if (playerFields[field].fieldType === 'empty' && playerFields[field].cards === 0 
+                if (playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0 
                     && fieldTypes.findIndex( fieldType => (fieldType === cardPlanted) === -1)) {
                     playerFields[field].fieldType = cardPlanted;
                     allowed = true;
@@ -52,17 +52,18 @@ export default class Turn {
                 }
 
                 if (allowed) {
-                    playerFields[field].cards++;
+                    playerFields[field].cardCount++;
                     fieldToBePlanted = playerFields[field];
-                    playerFields[field].counterText.setText(playerFields[field].cards);
+                    playerFields[field].counterText.setText(playerFields[field].cardCount);
                     break;
                 }
             }
         
             if (allowed) {
                 if (traded) {
-                    scene.add.image(fieldToBePlanted.x, fieldToBePlanted.y, cardPlanted).setOrigin(0, 0.5).setScale(0.25);
+                    fieldToBePlanted.cards.push(scene.add.image(fieldToBePlanted.x, fieldToBePlanted.y, cardPlanted).setOrigin(0, 0.5).setScale(0.25));
                 } else if (scene.phase < 2) {
+                    fieldToBePlanted.cards.push(gameObject);
                     gameObject.x = fieldToBePlanted.x;
                     gameObject.y = fieldToBePlanted.y;
                     gameObject.disableInteractive();
@@ -103,6 +104,7 @@ export default class Turn {
                     scene.phase++;
                 }
             } else {
+                console.log(gameObject);
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
@@ -113,32 +115,36 @@ export default class Turn {
             let playerFields = scene.player.fields;
 
             for (let field in playerFields) {
-                if (scene.phase === 1 && playerFields[field].fieldType === 'empty' && playerFields[field].cards === 0) {
+                if (scene.phase === 1 && playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0) {
                     allowed = true;
                     break;
                 }
             }
         
             if (allowed) {
-                gameObject.x = scene.discardPile.image.x;
-                gameObject.y = scene.discardPile.image.y;
-                gameObject.disableInteractive();
-                self.removeFromOpenCards(gameObject);
-                    
-                if (scene.openCards.length === 0) {
-                    scene.phase++;
-                }
-
-                scene.socket.emit('cardDiscarded', gameObject, scene.player);
-
-                if (scene.phase === 2) {
-                    scene.socket.emit('enableTrades', scene.player.id);
-                    scene.socket.emit('enableTakeThree');
-                    scene.phase++;
-                }
+                self.discardCard(gameObject);
             } else {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
+            }
+        }
+
+        this.discardCard = function(gameObject) {
+            gameObject.x = scene.discardPile.image.x;
+            gameObject.y = scene.discardPile.image.y;
+            gameObject.disableInteractive();
+            self.removeFromOpenCards(gameObject);
+                
+            if (scene.openCards.length === 0) {
+                scene.phase++;
+            }
+
+            scene.socket.emit('cardDiscarded', gameObject, scene.player);
+
+            if (scene.phase === 2) {
+                scene.socket.emit('enableTrades', scene.player.id);
+                scene.socket.emit('enableTakeThree');
+                scene.phase++;
             }
         }
         
@@ -170,7 +176,7 @@ export default class Turn {
             let fieldTypes = playerFields.map( field => field.fieldType );
 
             for (let field in playerFields) {
-                if ( (playerFields[field].fieldType === 'empty' && playerFields[field].cards === 0 
+                if ( (playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0 
                     && fieldTypes.findIndex( fieldType => (fieldType === cardPlanted) === -1)) 
                     || (playerFields[field].fieldType === cardPlanted)) {
                     allowed = true;
@@ -197,13 +203,17 @@ export default class Turn {
             } else if (scene.phase === 3 && dropZone.name === scene.playerTurn.id) {
                 self.dropToTradeFromHand(gameObject, dropZone.name);
             } else {
+                // need to add checks to see if it's allowed to be traded
                 self.dropToTradeFromDeck(gameObject, dropZone.name);
             }
         });
 
         this.plant = function() {
+            cardsPlayed = 0;
+            // scene.phase = 0;
             let firstCard = scene.player.hand[0];
             if (firstCard) {
+                console.log('inside plant firstcard');
                 firstCard.setInteractive();
                 scene.input.setDraggable(firstCard);
             } else {

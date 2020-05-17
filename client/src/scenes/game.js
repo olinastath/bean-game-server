@@ -68,8 +68,8 @@ export default class Game extends Phaser.Scene {
             hand: [],
             fieldZone: this.zone.renderZone(170, window.innerHeight / 2, 330, 240, 'fieldZone'),
             fields: [
-                {fieldType: 'empty', cards: 0, x: 50, y: window.innerHeight / 2, counterText: null},
-                {fieldType: 'empty', cards: 0, x: 175, y: window.innerHeight / 2, counterText: null}
+                {fieldType: 'empty', cardCount: 0, x: 50, y: window.innerHeight / 2, counterText: null, cards: []},
+                {fieldType: 'empty', cardCount: 0, x: 175, y: window.innerHeight / 2, counterText: null, cards: []}
             ],
             order: 0
         }
@@ -158,11 +158,13 @@ export default class Game extends Phaser.Scene {
         });
 
         this.socket.on('startTurn', function(nextPlayerIndex) {
+            console.log('turn started');
             self.turn.plant();
             // emit to end turn
         });
 
         this.socket.on('updatePlayerTurn', function(playerId) {
+            console.log('updating player turn');
             self.phase = 0;
             if (self.otherPlayers[playerId]) {
                 self.playerTurn = self.otherPlayers[playerId];
@@ -180,8 +182,8 @@ export default class Game extends Phaser.Scene {
             if (player.id !== self.player.id) {
                 let field = self.otherPlayers[player.id].fields.filter((field) => field.fieldType === cardPlayed || field.fieldType === 'empty')[0];
                 if (field) {
-                    field.cards++;
-                    field.counterText.setText(field.cards);
+                    field.cardCount++;
+                    field.counterText.setText(field.cardCount);
                     if (field.fieldType === 'empty') {
                         field.fieldType = cardPlayed;
                         self.add.image(field.x, field.y, cardPlayed).setOrigin(0, 0).setScale(0.15);

@@ -35,9 +35,9 @@ export default class Dealer {
 
             // player fields
             scene.add.image(50, window.innerHeight / 2, 'field').setOrigin(0, 0.5).setScale(0.25).setInteractive();
-            scene.player.fields[0].counterText = scene.add.text(108, window.innerHeight / 2 + 105, [scene.player.fields[0].cards]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
+            scene.player.fields[0].counterText = scene.add.text(108, window.innerHeight / 2 + 105, [scene.player.fields[0].cardCount]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
             scene.add.image(175, window.innerHeight / 2, 'field').setOrigin(0, 0.5).setScale(0.25).setInteractive();
-            scene.player.fields[1].counterText = scene.add.text(233, window.innerHeight / 2 + 105, [scene.player.fields[1].cards]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
+            scene.player.fields[1].counterText = scene.add.text(233, window.innerHeight / 2 + 105, [scene.player.fields[1].cardCount]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
 
             // player name + coins
             scene.add.text(window.innerWidth - 130, 35, [scene.player.name]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
@@ -73,10 +73,10 @@ export default class Dealer {
 
                     scene.otherPlayers[player].fields[0].x = 50 + 200 * i;
                     scene.otherPlayers[player].fields[0].y = 50;
-                    scene.otherPlayers[player].fields[0].counterText = scene.add.text(83 + 200 * i, 170, [scene.otherPlayers[player].fields[0].cards]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
+                    scene.otherPlayers[player].fields[0].counterText = scene.add.text(83 + 200 * i, 170, [scene.otherPlayers[player].fields[0].cardCount]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
                     scene.otherPlayers[player].fields[1].x = 125 + 200 * i;
                     scene.otherPlayers[player].fields[1].y = 50;
-                    scene.otherPlayers[player].fields[1].counterText = scene.add.text(160 + 200 * i, 170, [scene.otherPlayers[player].fields[1].cards]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
+                    scene.otherPlayers[player].fields[1].counterText = scene.add.text(160 + 200 * i, 170, [scene.otherPlayers[player].fields[1].cardCount]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
 
                     scene.otherPlayers[player].fieldZone = scene.zone.renderZone(120 + 200 * i, 95, 175, 175, player);
                 }

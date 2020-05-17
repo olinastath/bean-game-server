@@ -66,8 +66,8 @@ io.on('connection', function(socket) {
         coins: 0,
         fieldZone: null,
         fields: [
-            {fieldType: 'empty', cards: 0, x: 0, y: 0, counterText: null},
-            {fieldType: 'empty', cards: 0, x: 0, y: 0, counterText: null}
+            {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []},
+            {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []}
         ]
     }
 
@@ -103,6 +103,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('endTurn', function(playerIndex) {
+        console.log('turn ended');
         if (playerIndex === playersArray.length) playerIndex = 0;
         io.to(playersArray[playerIndex]).emit('startTurn', playerIndex + 1);
         io.emit('updatePlayerTurn', playersArray[playerIndex]);
