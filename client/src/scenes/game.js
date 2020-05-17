@@ -141,7 +141,6 @@ export default class Game extends Phaser.Scene {
         })
 
         this.socket.on('enableTakeThree', function(deck) {
-            console.log('enableTakeThree');
             self.turn.takeThree(deck);
         });
 
@@ -203,8 +202,6 @@ export default class Game extends Phaser.Scene {
         });
 
         this.socket.on('enableTradingWithPlayer', function(player) {
-            console.log('player is now accepting trades : ' + player);
-            // make all of your hand cards draggable
             self.turn.enableTradeFromHand(player);
         });
 

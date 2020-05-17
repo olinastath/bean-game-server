@@ -72,13 +72,18 @@ export default class Turn {
                         scene.dealer.shiftHand(0, 1);
             
                         let nextCard = scene.player.hand[0];
-                        let plantNext = fieldTypes.findIndex( fieldType => (fieldType === nextCard.texture.key || fieldType === 'empty')) != -1
-                        if (plantNext && cardsPlayed < 2) {
-                            nextCard.setInteractive();
-                            scene.input.setDraggable(nextCard);
+                        if (nextCard) {
+                            let plantNext = fieldTypes.findIndex( fieldType => (fieldType === nextCard.texture.key || fieldType === 'empty')) != -1
+                            if (plantNext && cardsPlayed < 2) {
+                                nextCard.setInteractive();
+                                scene.input.setDraggable(nextCard);
+                            } else {
+                                scene.phase++;
+                            }
                         } else {
                             scene.phase++;
                         }
+                        
                         scene.socket.emit('enableFlipCards');
                     } else if (scene.phase === 1) {
                         // delete from scene.openCards
@@ -201,6 +206,9 @@ export default class Turn {
             if (firstCard) {
                 firstCard.setInteractive();
                 scene.input.setDraggable(firstCard);
+            } else {
+                scene.phase++;
+                scene.socket.emit('enableFlipCards');
             }
             // add check, if no cards then move on to flipping without planting
         }
@@ -209,17 +217,14 @@ export default class Turn {
             scene.deck.setInteractive();
             scene.deck.on('pointerdown', function() {
                 if (scene.phase === 0) scene.phase++;
-
-                scene.player.hand[0].disableInteractive();
+                if (scene.player.hand.length) scene.player.hand[0].disableInteractive();
                 deck = deckToFlip;
                 scene.dealer.flipCards(deck);
             });
         }
 
         this.disableFlipCards = function() {
-            console.log('in turn.disableFlipCards');
             scene.deck.disableInteractive();
-            // scene.deck.off();
             scene.deck.removeAllListeners();
         }
 
@@ -232,14 +237,12 @@ export default class Turn {
         }
 
         this.disableTradeFromHand = function() {
-            console.log('in turn.disableTradeFromHand');
             scene.player.hand.forEach( function(card) {
                 card.disableInteractive();
             });
         }
 
         this.takeThree = function(deck) {
-            console.log('in turn.takeThree');
             scene.deck.setInteractive();
             scene.deck.on('pointerdown', function() {
                 scene.socket.emit('disableTrades');

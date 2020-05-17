@@ -85,7 +85,6 @@ export default class Dealer {
         }
 
         this.flipCards = function(deck) {
-            console.log('flipping cards');
             scene.openCards.forEach(function(card) { card.destroy(); });
             scene.openCards = [];
             scene.openCards.push(new Card(scene).render(window.innerWidth / 2 - 60, window.innerHeight / 2, deck[0], 0, 0.5));
@@ -103,12 +102,7 @@ export default class Dealer {
         }
 
         this.updateOpenCards = function(openCards) {
-            console.log('in dealer.updateOpenCards');
-            console.log(scene.openCards);
-            console.log(openCards);
             scene.openCards.forEach(card => card.destroy());
-            console.log(scene.openCards);
-            // do i need to set scene.openCards to openCards?
             openCards.forEach((card) => {
                 scene.openCards.push(new Card(scene).render(card.x, card.y, card.textureKey, card.origin.x, card.origin.y));
             });
