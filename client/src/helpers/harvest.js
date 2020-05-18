@@ -139,8 +139,10 @@ export default class Harvest {
             field.cardCount = 0;
             field.counterText.setText('0');
             field.fieldType = 'empty';
-            field.cards.forEach(card => card.destroy());
-            // scene.turn.discardCard();
+            field.cards.forEach(function(card) {
+                // card.destroy();
+                scene.turn.discardCard(card);
+            });
         }
 
         /**

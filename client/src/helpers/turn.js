@@ -1,6 +1,11 @@
 let cardsPlayed = 0;
 let deck = [];
 
+const ENTRY_POINTS = {
+    OPEN_CARDS: 'OPEN_CARDS',
+    FIELD: 'FIELD'
+}
+
 export default class Turn {
     constructor(scene) {
         let self = this;
@@ -122,23 +127,26 @@ export default class Turn {
             }
         
             if (allowed) {
-                self.discardCard(gameObject);
+                self.discardCard(gameObject, ENTRY_POINTS.OPEN_CARDS);
             } else {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
         }
 
-        this.discardCard = function(gameObject) {
+        this.discardCard = function(gameObject, entryPoint = null) {
             gameObject.x = scene.discardPile.image.x;
             gameObject.y = scene.discardPile.image.y;
             gameObject.disableInteractive();
-            self.removeFromOpenCards(gameObject);
-                
-            if (scene.openCards.length === 0) {
-                scene.phase++;
+            if (entryPoint === ENTRY_POINTS.OPEN_CARDS) {
+                self.removeFromOpenCards(gameObject);
+
+                if (scene.openCards.length === 0) {
+                    scene.phase++;
+                }
             }
 
+            // need to add it to discard pile array and emit to update it for everyone
             scene.socket.emit('cardDiscarded', gameObject, scene.player);
 
             if (scene.phase === 2) {

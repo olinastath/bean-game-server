@@ -192,6 +192,8 @@ export default class Game extends Phaser.Scene {
             }
         });
 
+        // need event to update view for other players when fields are harvested (similar to cardPlayed)
+
         this.socket.on('cardDiscarded', function(gameObject, player) {
             let cardDiscarded = gameObject.textureKey;
             if (player.id !== self.player.id) {
