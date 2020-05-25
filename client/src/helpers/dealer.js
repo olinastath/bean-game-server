@@ -1,8 +1,6 @@
 import Card from './card';
-
-let toggleDisplay = function(element) {
-    element.style.display !== 'none' ? element.style.display = 'none' : element.style.display = 'block';
-}
+import utils from '../helpers/utils';
+import config from './config';
 
 export default class Dealer {
     constructor(scene) {
@@ -47,19 +45,17 @@ export default class Dealer {
             scene.dashboard = scene.add.dom(window.innerWidth - 150, window.innerHeight / 2).setOrigin(0.5).createFromCache('dashboard');
 
             scene.dashboard.getChildByID('harvestFieldButton').addEventListener('click', function() {
-                toggleDisplay(scene.dashboard.getChildByID('harvestFieldButton'));
-                toggleDisplay(scene.dashboard.getChildByID('leftFieldButton'));
-                toggleDisplay(scene.dashboard.getChildByID('rightFieldButton'));
+                utils.toggleDisplay(scene.dashboard.getChildByID('harvestFieldButton'));
+                utils.toggleDisplay(scene.dashboard.getChildByID('leftFieldButton'));
+                utils.toggleDisplay(scene.dashboard.getChildByID('rightFieldButton'));
             });
 
             scene.dashboard.getChildByID('leftFieldButton').addEventListener('click', function() {
-                console.log('harvest left field');
-                scene.harvest.harvestField(scene.player.fields[0]);
+                scene.harvest.harvestField(config.CONSTANTS.FIELD_INDEX.LEFT_FIELD);
             });
 
             scene.dashboard.getChildByID('rightFieldButton').addEventListener('click', function() {
-                console.log('harvest right field');
-                scene.harvest.harvestField(scene.player.fields[1]);
+                scene.harvest.harvestField(config.CONSTANTS.FIELD_INDEX.RIGHT_FIELD);
             });
             
             // other players' fields
@@ -74,9 +70,11 @@ export default class Dealer {
                     scene.otherPlayers[player].fields[0].x = 50 + 200 * i;
                     scene.otherPlayers[player].fields[0].y = 50;
                     scene.otherPlayers[player].fields[0].counterText = scene.add.text(83 + 200 * i, 170, [scene.otherPlayers[player].fields[0].cardCount]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
+                    scene.otherPlayers[player].fields[0].cards = [];
                     scene.otherPlayers[player].fields[1].x = 125 + 200 * i;
                     scene.otherPlayers[player].fields[1].y = 50;
                     scene.otherPlayers[player].fields[1].counterText = scene.add.text(160 + 200 * i, 170, [scene.otherPlayers[player].fields[1].cardCount]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
+                    scene.otherPlayers[player].fields[0].cards = [];
 
                     scene.otherPlayers[player].fieldZone = scene.zone.renderZone(120 + 200 * i, 95, 175, 175, player);
                 }

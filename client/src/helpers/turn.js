@@ -1,10 +1,9 @@
+import config from '../helpers/config';
+
 let cardsPlayed = 0;
 let deck = [];
 
-const ENTRY_POINTS = {
-    OPEN_CARDS: 'OPEN_CARDS',
-    FIELD: 'FIELD'
-}
+
 
 export default class Turn {
     constructor(scene) {
@@ -109,7 +108,6 @@ export default class Turn {
                     scene.phase++;
                 }
             } else {
-                console.log(gameObject);
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
@@ -127,27 +125,41 @@ export default class Turn {
             }
         
             if (allowed) {
-                self.discardCard(gameObject, ENTRY_POINTS.OPEN_CARDS);
+                self.discardCard(gameObject, config.CONSTANTS.ENTRY_POINTS.OPEN_CARDS, true, null, false);
             } else {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
         }
 
-        this.discardCard = function(gameObject, entryPoint = null) {
-            gameObject.x = scene.discardPile.image.x;
-            gameObject.y = scene.discardPile.image.y;
+        this.discardCard = function(gameObject, entryPoint = null, addToDiscardPile = true, fieldIndex = null, emptyField = false) {
             gameObject.disableInteractive();
-            if (entryPoint === ENTRY_POINTS.OPEN_CARDS) {
+            let cardDiscarded = gameObject.texture.key;
+            if (addToDiscardPile) {
+                gameObject.x = scene.discardPile.image.x;
+                gameObject.y = scene.discardPile.image.y;
+                scene.children.bringToTop(gameObject);
+                // scene.discardPile.list.push(gameObject);
+            }
+            if (entryPoint === config.CONSTANTS.ENTRY_POINTS.OPEN_CARDS) {
                 self.removeFromOpenCards(gameObject);
+                scene.discardPile.list.push(gameObject);
 
                 if (scene.openCards.length === 0) {
                     scene.phase++;
+                }                
+            } else if (entryPoint === config.CONSTANTS.ENTRY_POINTS.FIELD) {
+                if (!addToDiscardPile) {
+                    gameObject.destroy();
+                } else {
+                    scene.discardPile.list.push(gameObject);
                 }
+                // change field settings
+                // this is where i need to destroy gameObject if not addToDiscardPile
             }
 
             // need to add it to discard pile array and emit to update it for everyone
-            scene.socket.emit('cardDiscarded', gameObject, scene.player);
+            scene.socket.emit('cardDiscarded', cardDiscarded, scene.player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
 
             if (scene.phase === 2) {
                 scene.socket.emit('enableTrades', scene.player.id);
@@ -210,25 +222,21 @@ export default class Turn {
                 self.dropOnDiscard(gameObject);
             } else if (scene.phase === 3 && dropZone.name === scene.playerTurn.id) {
                 self.dropToTradeFromHand(gameObject, dropZone.name);
-            } else {
-                // need to add checks to see if it's allowed to be traded
+            } else { // need to add checks to see if it's allowed to be traded
                 self.dropToTradeFromDeck(gameObject, dropZone.name);
             }
         });
 
         this.plant = function() {
             cardsPlayed = 0;
-            // scene.phase = 0;
             let firstCard = scene.player.hand[0];
             if (firstCard) {
-                console.log('inside plant firstcard');
                 firstCard.setInteractive();
                 scene.input.setDraggable(firstCard);
             } else {
                 scene.phase++;
                 scene.socket.emit('enableFlipCards');
             }
-            // add check, if no cards then move on to flipping without planting
         }
 
         this.flipCards = function(deckToFlip) {

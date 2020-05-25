@@ -103,7 +103,6 @@ io.on('connection', function(socket) {
     });
 
     socket.on('endTurn', function(playerIndex) {
-        console.log('turn ended');
         if (playerIndex === playersArray.length) playerIndex = 0;
         io.to(playersArray[playerIndex]).emit('startTurn', playerIndex + 1);
         io.emit('updatePlayerTurn', playersArray[playerIndex]);
@@ -129,9 +128,9 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('cardPlayed', gameObject, player);
     });
 
-    socket.on('cardDiscarded', function(gameObject, player) {
-        discardPile.push(gameObject.textureKey);
-        socket.broadcast.emit('cardDiscarded', gameObject, player);
+    socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint = null, addToDiscardPile = true, fieldIndex, emptyField) {
+        if (addToDiscardPile) discardPile.push(cardDiscarded);
+        socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
     socket.on('tradeCard', function(gameObject, player) {

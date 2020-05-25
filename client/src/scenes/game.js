@@ -3,6 +3,7 @@ import Dealer from '../helpers/dealer';
 import Turn from '../helpers/turn';
 import Harvest from '../helpers/harvest'
 import io from 'socket.io-client';
+import config from '../helpers/config';
 
 const getPlayersExcept = function(playersObject, playerToExclude) {
     let players = {};
@@ -158,22 +159,21 @@ export default class Game extends Phaser.Scene {
         });
 
         this.socket.on('startTurn', function(nextPlayerIndex) {
-            console.log('turn started');
             self.turn.plant();
             // emit to end turn
         });
 
         this.socket.on('updatePlayerTurn', function(playerId) {
-            console.log('updating player turn');
+            let dashboardHeader = document.querySelector('#dashboard h1');
             self.phase = 0;
             if (self.otherPlayers[playerId]) {
                 self.playerTurn = self.otherPlayers[playerId];
-                document.querySelector('#dashboard h1').innerHTML = self.playerTurn.name + '\'s turn';
-                document.querySelector('#dashboard h1').style.color = '#ffffff';
+                dashboardHeader.innerHTML = self.playerTurn.name + '\'s turn';
+                dashboardHeader.style.color = '#ffffff';
             } else {
                 self.playerTurn = self.player;
-                document.querySelector('#dashboard h1').innerHTML = 'YOUR TURN';
-                document.querySelector('#dashboard h1').style.color = '#fad550';
+                dashboardHeader.innerHTML = 'YOUR TURN';
+                dashboardHeader.style.color = '#fad550';
             }
         });
 
@@ -186,18 +186,39 @@ export default class Game extends Phaser.Scene {
                     field.counterText.setText(field.cardCount);
                     if (field.fieldType === 'empty') {
                         field.fieldType = cardPlayed;
-                        self.add.image(field.x, field.y, cardPlayed).setOrigin(0, 0).setScale(0.15);
+                        field.cards.push(self.add.image(field.x, field.y, cardPlayed).setOrigin(0, 0).setScale(0.15));
                     }
                 }
             }
         });
 
         // need event to update view for other players when fields are harvested (similar to cardPlayed)
-
-        this.socket.on('cardDiscarded', function(gameObject, player) {
-            let cardDiscarded = gameObject.textureKey;
+        this.socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField) {
+            // adding to discardPile list so we can destroy images when we shuffle
             if (player.id !== self.player.id) {
-                self.discardPile.list.push(self.add.image(window.innerWidth / 2 + 200, window.innerHeight / 2, cardDiscarded).setOrigin(0, 0.5).setScale(0.25));
+                if (addToDiscardPile) {
+                    self.discardPile.list.push(self.add.image(window.innerWidth / 2 + 200, window.innerHeight / 2, cardDiscarded).setOrigin(0, 0.5).setScale(0.25));
+                }
+                
+                if (entryPoint === config.CONSTANTS.ENTRY_POINTS.FIELD) {
+                    // need to broadcast to other players that your field has changed
+                    // remove gameObject from your field
+                    // this is where we discard the fields for other players
+                    let field = self.otherPlayers[player.id].fields[fieldIndex];
+                    if (field) {
+                        field.cardCount--;
+                        field.counterText.setText(field.cardCount);
+
+                        if (emptyField) {
+                            let cardDeleted = field.cards.splice(0, 1)[0];
+                            if (cardDeleted) cardDeleted.destroy();
+                        }
+                        
+                        if (field.cardCount === 0) {
+                            field.fieldType = 'empty';
+                        }
+                    }
+                }
             }
         });
 
