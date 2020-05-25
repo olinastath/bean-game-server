@@ -2,8 +2,8 @@ import Zone from '../helpers/zone';
 import Dealer from '../helpers/dealer';
 import Turn from '../helpers/turn';
 import Harvest from '../helpers/harvest'
-import io from 'socket.io-client';
 import config from '../helpers/config';
+import io from 'socket.io-client';
 
 const getPlayersExcept = function(playersObject, playerToExclude) {
     let players = {};

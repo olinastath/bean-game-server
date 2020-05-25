@@ -1,5 +1,5 @@
 import Card from './card';
-import utils from '../helpers/utils';
+import utils from './utils';
 import config from './config';
 
 export default class Dealer {

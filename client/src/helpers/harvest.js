@@ -1,4 +1,4 @@
-import config from '../helpers/config';
+import config from './config';
 
 export default class Harvest {
     constructor(scene) {

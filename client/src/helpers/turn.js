@@ -1,4 +1,4 @@
-import config from '../helpers/config';
+import config from "./config";
 
 let cardsPlayed = 0;
 let deck = [];
