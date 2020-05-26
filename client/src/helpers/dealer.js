@@ -45,9 +45,7 @@ export default class Dealer {
             scene.dashboard = scene.add.dom(window.innerWidth - 150, window.innerHeight / 2).setOrigin(0.5).createFromCache('dashboard');
 
             scene.dashboard.getChildByID('harvestFieldButton').addEventListener('click', function() {
-                utils.toggleDisplay(scene.dashboard.getChildByID('harvestFieldButton'));
-                utils.toggleDisplay(scene.dashboard.getChildByID('leftFieldButton'));
-                utils.toggleDisplay(scene.dashboard.getChildByID('rightFieldButton'));
+                utils.resetHarvestFieldButtonDisplay(scene);
             });
 
             scene.dashboard.getChildByID('leftFieldButton').addEventListener('click', function() {

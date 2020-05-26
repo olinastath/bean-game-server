@@ -24,7 +24,7 @@
       }
       
       /* LANDING PAGE */
-      #inputDiv {
+      #inputContainer {
         font-size: 18px;
         text-align: center;
       }
@@ -59,7 +59,7 @@
       }
 
       /* DASHBOARD */
-      #dashboard, #harvestPopup {
+      #dashboard, #harvestPopupContainer {
         text-align: center;
       }
 
@@ -80,19 +80,19 @@
         background: #fad550;
       }
 
-      .turnWrapper {
+      .turnWrapper, .endGameWrapper {
         width: 100%;
         list-style: none;
       }
 
       /* HARVEST POPUP */
-      #harvestPopup {
+      #harvestPopupContainer {
         background: rgba(255, 255, 255, 0.95);
         width: 350px;
         padding: 20px 0;
       }
 
-      #harvestPopup p {
+      #harvestPopupContainer p {
         padding: 10px;
         color: black;
         font-size: 20px;
@@ -100,6 +100,11 @@
 
       .harvestButton {
         width: 100px;
+      }
+
+      /* END GAME */
+      #endGameButton {
+        display: none !important;
       }
       </style>
     <meta charset="utf-8">

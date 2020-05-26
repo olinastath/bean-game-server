@@ -30,7 +30,8 @@ export default class Harvest {
                     }
                 }
             } else {
-                console.log('field is empty');
+                window.alert('Field is empty.');
+                utils.resetHarvestFieldButtonDisplay(scene);
             }
         }
 
@@ -43,6 +44,7 @@ export default class Harvest {
             scene.harvestPopup = scene.add.dom(window.innerWidth / 2, window.innerHeight / 2).setOrigin(0.5).createFromCache('harvestPopup');
             scene.harvestPopup.getChildByID('noButton').addEventListener('click', function() {
                 scene.harvestPopup.destroy();
+                utils.resetHarvestFieldButtonDisplay(scene);
             });            
         }
 
@@ -56,6 +58,7 @@ export default class Harvest {
             scene.harvestPopup.getChildByID('yesButton').addEventListener('click', function() {
                 callback();
                 scene.harvestPopup.destroy();
+                utils.resetHarvestFieldButtonDisplay(scene);
             });
         }
 

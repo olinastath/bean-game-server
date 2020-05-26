@@ -3,17 +3,8 @@ import Dealer from '../helpers/dealer';
 import Turn from '../helpers/turn';
 import Harvest from '../helpers/harvest'
 import config from '../helpers/config';
+import utils from '../helpers/utils';
 import io from 'socket.io-client';
-
-const getPlayersExcept = function(playersObject, playerToExclude) {
-    let players = {};
-    for (let player in playersObject) {
-        if (player !== playerToExclude) {
-            players[player] = playersObject[player];
-        }
-    }
-    return players;
-}
 
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -106,7 +97,7 @@ export default class Game extends Phaser.Scene {
                 nameForm.destroy();
                 self.socket.emit('newPlayerName', self.socket.id, self.player);
             } else {
-                document.querySelector('#inputDiv h1').style.color = '#dc201f';
+                document.querySelector('#inputContainer h1').style.color = '#dc201f';
             }
         });
 
@@ -130,7 +121,7 @@ export default class Game extends Phaser.Scene {
         this.socket.on('playerChange', function(numberOfPlayers, playersObject) {
             self.numberOfPlayers = numberOfPlayers;
             self.playerCountText.setText(self.numberOfPlayers + ' players ready');
-            self.otherPlayers = getPlayersExcept(playersObject, self.socket.id);
+            self.otherPlayers = utils.getPlayersExcept(playersObject, self.socket.id);
         });
 
         this.socket.on('enableFlipCards', function(deck) {
@@ -232,6 +223,29 @@ export default class Game extends Phaser.Scene {
 
         this.socket.on('disableTradingWithPlayer', function() {
             self.turn.disableTradeFromHand();
+        });
+
+        this.socket.on('gameEndingWarning', function() {
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDING_WARNING);
+        });
+
+        this.socket.on('gameEnded', function() {
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDED);
+        });
+
+        this.socket.on('reshuffleWarning', function() {
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.RESHUFFLE_WARNING);
+        });
+
+        this.socket.on('reshuffleSuccess', function(roundsRemaining) {
+            let replaceText;
+            if (roundsRemaining === 1) {
+                replaceText = '1 round remaining';
+            } else if (roundsRemaining === 0) {
+                replaceText = 'last round';
+            }
+            
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.RESHUFFLE_SUCCESS.replace('REPLACE_TEXT', replaceText));
         });
     }
 

@@ -75,6 +75,22 @@ const FIELD_INDEX = {
     RIGHT_FIELD: 1
 }
 
+/**
+ * @constant ALERT_MESSAGES
+ * @memberof config
+ * @description Constant to store alert messages.
+ * @type {{RESHUFFLE_WARNING: string}, {RESHUFFLE_SUCCESS: Number}, {GAME_ENDING_WARNING: string}, {GAME_ENDED: string}}
+ * @property {string} RESHUFFLE_WARNING Alert message for deck running low
+ * @property {string} RESHUFFLE_SUCCESS Alert message for successful reshuffling
+ * @property {string} GAME_ENDING_WARNING Alert message for game ending warning
+ * @property {string} GAME_ENDED Alert message for final moves as game has ended
+*/
+const ALERT_MESSAGES = {
+    RESHUFFLE_WARNING: 'Deck is running low, will reshuffle from discard pile before next player\'s turn.',
+    RESHUFFLE_SUCCESS: 'Discard pile has been reshuffled, REPLACE_TEXT.',
+    GAME_ENDING_WARNING: 'Deck is running low, each player has one(-ish) turn left (probably, the math could be off).',
+    GAME_ENDED: 'Deck has run out. Finish this round, harvest your fields, and press "end game" to broadcast your results.'
+}
 
 /**
  * @constant CONSTANTS
@@ -98,7 +114,8 @@ const CONSTANTS = {
     BEAN_NAME_MAP,
     FLAGS,
     ENTRY_POINTS,
-    FIELD_INDEX
+    FIELD_INDEX,
+    ALERT_MESSAGES
 };
    
 /**

@@ -4,9 +4,6 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 app.use(express.static('public'));
 
-let playersArray = [];
-let playersObject = {};
-
 const generateDeck = function(numberOfPlayers) {
     let deck = [];
     if (3 < numberOfPlayers < 6) {
@@ -54,6 +51,12 @@ const getPlayersExcept = function(playerToExclude) {
     return players;
 }
 
+let playersArray = [];
+let playersObject = {};
+let rounds = 0;
+let gameEndingWarning = false;
+let reshuffleWarning = false;
+let reshuffleSuccess = false;
 let deck = [];
 let discardPile = [];
 
@@ -87,10 +90,29 @@ io.on('connection', function(socket) {
         deck = shuffleDeck(generateDeck(playersArray.length));
         io.emit('startGame', deck);
         io.to(playersArray[0]).emit('dealCards', deck, 1);
+        rounds = 1;
     });
 
     socket.on('updateDeck', function(updatedDeck) {
         deck = updatedDeck;
+        if (rounds === 3 && deck.length <= 20 && !gameEndingWarning) {
+            // this is the last round, check length and send warning
+            io.emit('gameEndingWarning');
+            gameEndingWarning = true;
+        } else if (rounds === 3 && deck.length === 0) {
+            io.emit('gameEnded');
+        } else if (rounds < 3 && deck.length < 10 && !reshuffleWarning) {
+            io.emit('reshuffleWarning');
+            reshuffleWarning = true;
+            reshuffleSuccess = false;
+        } else if (rounds < 3 && deck.length < 5 && !reshuffleSuccess) {
+            rounds++;
+            deck = deck.concat(discardPile);
+            discardPile = [];
+            io.emit('reshuffleSuccess', 3 - rounds);
+            reshuffleSuccess = true;
+            reshuffleWarning = false;
+        }
     });
 
     socket.on('dealNextPlayer', function(playerIndex) {
