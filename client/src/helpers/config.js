@@ -93,21 +93,33 @@ const ALERT_MESSAGES = {
 }
 
 /**
+ * @constant EMPTY_FIELD
+ * @memberof config
+ * @description Constant to store empty field type
+ * @type {string}
+ */
+const EMPTY_FIELD = 'empty'
+
+/**
  * @constant CONSTANTS
  * @memberof config
  * @description Collection of constants values for usage in component.
  * @type {{
     *     BEAN_HARVESTING_NUMBERS_MAP: Object,
     *     BEAN_NAME_MAP: Object,
-    *     FLAGS: Object
-    *     ENTRY_POINTS: Object
-    *     FIELD_INDEX: Object
+    *     FLAGS: Object,
+    *     ENTRY_POINTS: Object,
+    *     FIELD_INDEX: Object,
+    *     ALERT_MESSAGES: Object,
+    *     EMPTY_FIELD: string
     * }}
 * @property {Object} BEAN_HARVESTING_NUMBERS_MAP
 * @property {Object} BEAN_NAME_MAP
 * @property {Object} FLAGS
 * @property {Object} ENTRY_POINTS
 * @property {Object} FIELD_INDEX
+* @property {Object} ALERT_MESSAGES
+* @property {string} EMPTY_FIELD
 */
 const CONSTANTS = {
     BEAN_HARVESTING_NUMBERS_MAP,
@@ -115,7 +127,8 @@ const CONSTANTS = {
     FLAGS,
     ENTRY_POINTS,
     FIELD_INDEX,
-    ALERT_MESSAGES
+    ALERT_MESSAGES,
+    EMPTY_FIELD
 };
    
 /**

@@ -1,3 +1,5 @@
+import config from "./config";
+
 /**
  * @method toggleDisplay
  * @description Toggles the display of a DOM element
@@ -36,11 +38,37 @@ function getPlayersExcept(playersObject, playerToExclude) {
 }
 
 /**
+ * @method isFieldEmpty
+ * @description Checks if field passed in is empty
+ * @param field {Object}
+ * @returns {boolean} 
+ */
+function isFieldEmpty(field) {
+    return field.fieldType === config.CONSTANTS.EMPTY_FIELD;
+}
+
+/**
+ * @method getAvailableField
+ * @description Checks if there is a field where cardPlanted can be planted
+ * @param fields {Array} player's fields to check
+ * @param cardPlanted {string} card type to check field type against
+ * @returns {Object} field that is available 
+ */
+function getAvailableField(fields, cardPlanted) {
+    console.log(fields);
+    let emptyFields = fields.filter((field) => isFieldEmpty(field));
+    let matchingFields = fields.filter((field) => field.fieldType === cardPlanted);
+    return matchingFields.concat(emptyFields)[0];
+}
+
+/**
  * @module utils
  * @description Module for util functions
  */
 export default {
     toggleDisplay,
     resetHarvestFieldButtonDisplay,
-    getPlayersExcept
+    getPlayersExcept,
+    isFieldEmpty,
+    getAvailableField
 };

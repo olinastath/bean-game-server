@@ -95,7 +95,7 @@ io.on('connection', function(socket) {
 
     socket.on('updateDeck', function(updatedDeck) {
         deck = updatedDeck;
-        if (rounds === 3 && deck.length <= 20 && !gameEndingWarning) {
+        if (rounds === 3 && deck.length <= (playersArray.length * 5) && !gameEndingWarning) {
             // this is the last round, check length and send warning
             io.emit('gameEndingWarning');
             gameEndingWarning = true;

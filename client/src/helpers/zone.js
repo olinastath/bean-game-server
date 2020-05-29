@@ -1,8 +1,10 @@
+import config from './config';
+
 export default class Zone {
     constructor(scene) {
         this.renderZone = function(x, y, width, height, name) {
             let dropZone = scene.add.zone(x, y, width, height).setRectangleDropZone(width, height).setName(name);
-            dropZone.setData({fieldType: 'empty', cards: 0});
+            dropZone.setData({fieldType: config.CONSTANTS.EMPTY_FIELD, cards: 0});
             return dropZone;
         }
 

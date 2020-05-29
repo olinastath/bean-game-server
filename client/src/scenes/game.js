@@ -60,8 +60,8 @@ export default class Game extends Phaser.Scene {
             hand: [],
             fieldZone: this.zone.renderZone(170, window.innerHeight / 2, 330, 240, 'fieldZone'),
             fields: [
-                {fieldType: 'empty', cardCount: 0, x: 50, y: window.innerHeight / 2, counterText: null, cards: []},
-                {fieldType: 'empty', cardCount: 0, x: 175, y: window.innerHeight / 2, counterText: null, cards: []}
+                {fieldType: config.CONSTANTS.EMPTY_FIELD, cardCount: 0, x: 50, y: window.innerHeight / 2, counterText: null, cards: []},
+                {fieldType: config.CONSTANTS.EMPTY_FIELD, cardCount: 0, x: 175, y: window.innerHeight / 2, counterText: null, cards: []}
             ],
             order: 0
         }
@@ -171,11 +171,11 @@ export default class Game extends Phaser.Scene {
         this.socket.on('cardPlayed', function(gameObject, player) {
             let cardPlayed = gameObject.textureKey;
             if (player.id !== self.player.id) {
-                let field = self.otherPlayers[player.id].fields.filter((field) => field.fieldType === cardPlayed || field.fieldType === 'empty')[0];
+                let field = utils.getAvailableField(self.otherPlayers[player.id].fields, cardPlayed);
                 if (field) {
                     field.cardCount++;
                     field.counterText.setText(field.cardCount);
-                    if (field.fieldType === 'empty') {
+                    if (utils.isFieldEmpty(field)) {
                         field.fieldType = cardPlayed;
                         field.cards.push(self.add.image(field.x, field.y, cardPlayed).setOrigin(0, 0).setScale(0.15));
                     }
@@ -206,7 +206,7 @@ export default class Game extends Phaser.Scene {
                         }
                         
                         if (field.cardCount === 0) {
-                            field.fieldType = 'empty';
+                            field.fieldType = config.CONSTANTS.EMPTY_FIELD;
                         }
                     }
                 }

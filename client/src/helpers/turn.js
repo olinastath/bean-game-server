@@ -1,4 +1,5 @@
 import config from "./config";
+import utils from "./utils";
 
 let cardsPlayed = 0;
 let deck = [];
@@ -37,33 +38,17 @@ export default class Turn {
         }
         
         this.dropOnField = function(gameObject, traded) {
-            let allowed = false;
             let fieldTypes = scene.player.fields.map( field => field.fieldType );
             let cardPlanted = traded ? gameObject.textureKey : gameObject.texture.key;
-            let playerFields = scene.player.fields;
-            let fieldToBePlanted = null;
-            
-            // go through fields
-            // if at least one field is empty, pick the first empty one and fill it
-            // if not empty, check if one of them has the fieldtype
-            for (let field in playerFields) {
-                if (playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0 
-                    && fieldTypes.findIndex( fieldType => (fieldType === cardPlanted) === -1)) {
-                    playerFields[field].fieldType = cardPlanted;
-                    allowed = true;
-                } else if (playerFields[field].fieldType === cardPlanted) {
-                    allowed = true;
-                }
 
-                if (allowed) {
-                    playerFields[field].cardCount++;
-                    fieldToBePlanted = playerFields[field];
-                    playerFields[field].counterText.setText(playerFields[field].cardCount);
-                    break;
+            let fieldToBePlanted = utils.getAvailableField(scene.player.fields, cardPlanted);
+
+            if (fieldToBePlanted) {
+                fieldToBePlanted.cardCount++;
+                fieldToBePlanted.counterText.setText(fieldToBePlanted.cardCount);
+                if (utils.isFieldEmpty(fieldToBePlanted)) {
+                    fieldToBePlanted.fieldType = cardPlanted;
                 }
-            }
-        
-            if (allowed) {
                 if (traded) {
                     fieldToBePlanted.cards.push(scene.add.image(fieldToBePlanted.x, fieldToBePlanted.y, cardPlanted).setOrigin(0, 0.5).setScale(0.25));
                 } else if (scene.phase < 2) {
@@ -78,7 +63,8 @@ export default class Turn {
             
                         let nextCard = scene.player.hand[0];
                         if (nextCard) {
-                            let plantNext = fieldTypes.findIndex( fieldType => (fieldType === nextCard.texture.key || fieldType === 'empty')) != -1
+                            // smarter check, fieldTypes is an array of length 2
+                            let plantNext = fieldTypes.findIndex( fieldType => (fieldType === nextCard.texture.key || fieldType === config.CONSTANTS.EMPTY_FIELD)) != -1
                             if (plantNext && cardsPlayed < 2) {
                                 nextCard.setInteractive();
                                 scene.input.setDraggable(nextCard);
@@ -118,7 +104,7 @@ export default class Turn {
             let playerFields = scene.player.fields;
 
             for (let field in playerFields) {
-                if (scene.phase === 1 && playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0) {
+                if (scene.phase === 1 && utils.isFieldEmpty(playerFields[field]) && playerFields[field].cardCount === 0) {
                     allowed = true;
                     break;
                 }
@@ -190,20 +176,8 @@ export default class Turn {
 
         this.dropToTradeFromHand = function(gameObject, player) {
             // check if it can be traded with that player
-            let playerFields = scene.otherPlayers[player].fields;
-            let allowed = false;
-            let cardPlanted = gameObject.texture.key;
-            let fieldTypes = playerFields.map( field => field.fieldType );
-
-            for (let field in playerFields) {
-                if ( (playerFields[field].fieldType === 'empty' && playerFields[field].cardCount === 0 
-                    && fieldTypes.findIndex( fieldType => (fieldType === cardPlanted) === -1)) 
-                    || (playerFields[field].fieldType === cardPlanted)) {
-                    allowed = true;
-                }
-            }
-
-            if (allowed) {
+            let availableField = utils.getAvailableField(scene.otherPlayers[player].fields, gameObject.texture.key);
+            if (availableField) {
                 scene.socket.emit('tradeCard', gameObject, player);
                 let index = scene.player.hand.indexOf(gameObject);
                 scene.player.hand.splice(index, 1);

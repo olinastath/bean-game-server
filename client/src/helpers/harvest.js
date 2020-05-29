@@ -1,4 +1,5 @@
 import config from './config';
+import utils from './utils';
 
 export default class Harvest {
     constructor(scene) {
@@ -87,7 +88,7 @@ export default class Harvest {
             scene.coinCount.setText(parseInt(scene.coinCount['_text'], 10) + coins);
             field.counterText.setText(field.cardCount);
             if (emptyField) {
-                field.fieldType = 'empty';
+                field.fieldType = config.CONSTANTS.EMPTY_FIELD;
             }
             // if coins, add coins to coincounter
             // scene.coinCount.setText(scene.coinCount.getText() + coins);
