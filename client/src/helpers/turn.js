@@ -155,18 +155,22 @@ export default class Turn {
         }
         
         this.dropToTradeFromDeck = function(gameObject, player) {
-            if (scene.phase === 1) {
-                scene.socket.emit('tradeCard', gameObject, player);
-                self.removeFromOpenCards(gameObject);
-                if (scene.openCards.length === 0) {
-                    scene.phase++;
-                }
-                gameObject.destroy();
-                
-                if (scene.phase === 2) {
-                    scene.socket.emit('enableTrades', scene.player.id);
-                    scene.socket.emit('enableTakeThree');
-                    scene.phase++;
+            // check if it can be traded with that player
+            let availableField = utils.getAvailableField(scene.otherPlayers[player].fields, gameObject.texture.key);
+            if (availableField) {
+                if (scene.phase === 1) {
+                    scene.socket.emit('tradeCard', gameObject, player);
+                    self.removeFromOpenCards(gameObject);
+                    if (scene.openCards.length === 0) {
+                        scene.phase++;
+                    }
+                    gameObject.destroy();
+                    
+                    if (scene.phase === 2) {
+                        scene.socket.emit('enableTrades', scene.player.id);
+                        scene.socket.emit('enableTakeThree');
+                        scene.phase++;
+                    }
                 }
             } else {
                 gameObject.x = gameObject.input.dragStartX;
