@@ -5,7 +5,7 @@
 */
 const BEAN_HARVESTING_NUMBERS_MAP = {
     'cocoaBean': {2: 2, 3: 3, 4:4},
-    'gardenBean': {2: 2, 3: 3},
+    'gardenBean': {2: 2, 3: 3, 4:4},
     'redBean': {2: 1, 3: 2, 4: 3, 5: 4},
     'blackEyedBean': {2: 1, 4: 2, 5: 3, 6: 4},
     'soyBean': {2: 1, 4: 2, 6: 3, 7: 4},
