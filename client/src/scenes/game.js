@@ -246,6 +246,8 @@ export default class Game extends Phaser.Scene {
             }
             
             window.alert(config.CONSTANTS.ALERT_MESSAGES.RESHUFFLE_SUCCESS.replace('REPLACE_TEXT', replaceText));
+            self.discardPile.list.forEach( (discardedCard) => discardedCard.destroy());
+            self.discardPile.list = [];
         });
     }
 
