@@ -55,7 +55,6 @@ function isFieldEmpty(field) {
  * @returns {Object} field that is available 
  */
 function getAvailableField(fields, cardPlanted) {
-    console.log(fields);
     let emptyFields = fields.filter((field) => isFieldEmpty(field));
     let matchingFields = fields.filter((field) => field.fieldType === cardPlanted);
     return matchingFields.concat(emptyFields)[0];

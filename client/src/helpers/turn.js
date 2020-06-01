@@ -4,8 +4,6 @@ import utils from "./utils";
 let cardsPlayed = 0;
 let deck = [];
 
-
-
 export default class Turn {
     constructor(scene) {
         let self = this;

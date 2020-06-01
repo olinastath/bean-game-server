@@ -42,6 +42,7 @@ export default class Harvest {
          * @memberof harvest
          */
         this.createDOMElements = function() {
+            if (scene.harvestPopup) scene.harvestPopup.destroy();
             scene.harvestPopup = scene.add.dom(window.innerWidth / 2, window.innerHeight / 2).setOrigin(0.5).createFromCache('harvestPopup');
             scene.harvestPopup.getChildByID('noButton').addEventListener('click', function() {
                 scene.harvestPopup.destroy();

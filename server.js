@@ -55,6 +55,7 @@ let playersArray = [];
 let playersObject = {};
 let rounds = 0;
 let gameEndingWarning = false;
+let gameEnded = false;
 let reshuffleWarning = false;
 let reshuffleSuccess = false;
 let deck = [];
@@ -99,15 +100,16 @@ io.on('connection', function(socket) {
             // this is the last round, check length and send warning
             io.emit('gameEndingWarning');
             gameEndingWarning = true;
-        } else if (rounds === 3 && deck.length === 0) {
+        } else if (rounds === 3 && deck.length === 0 && !gameEnded) {
             io.emit('gameEnded');
+            gameEnded = true;
         } else if (rounds < 3 && deck.length < 10 && !reshuffleWarning) {
             io.emit('reshuffleWarning');
             reshuffleWarning = true;
             reshuffleSuccess = false;
         } else if (rounds < 3 && deck.length < 5 && !reshuffleSuccess) {
             rounds++;
-            deck = deck.concat(discardPile);
+            deck = shuffleDeck(deck.concat(discardPile));
             discardPile = [];
             io.emit('reshuffleSuccess', 3 - rounds);
             reshuffleSuccess = true;
@@ -126,8 +128,10 @@ io.on('connection', function(socket) {
 
     socket.on('endTurn', function(playerIndex) {
         if (playerIndex === playersArray.length) playerIndex = 0;
-        io.to(playersArray[playerIndex]).emit('startTurn', playerIndex + 1);
-        io.emit('updatePlayerTurn', playersArray[playerIndex]);
+        if (!gameEnded) {
+            io.to(playersArray[playerIndex]).emit('startTurn', playerIndex + 1);
+            io.emit('updatePlayerTurn', playersArray[playerIndex]);
+        }
     });
 
     socket.on('enableFlipCards', function() {

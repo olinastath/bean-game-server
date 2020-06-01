@@ -73,7 +73,6 @@ export default class Game extends Phaser.Scene {
         this.otherPlayers = {};
         this.openCards = [];
         this.playerTurn;
-        this.phases = ['plant', 'flip cards', 'trade from deck', 'receive cards'];
         this.phase = 0;
 
         this.playerCountText = this.add.text(window.innerWidth / 2, window.innerHeight / 2 - 25, [this.numberOfPlayers + ' players ready']).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550').setInteractive().setVisible(false);
@@ -231,6 +230,14 @@ export default class Game extends Phaser.Scene {
 
         this.socket.on('gameEnded', function() {
             window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDED);
+            // enable end game button
+            utils.toggleDisplay(self.dashboard.getChildByID('endGameButton'));
+            self.dashboard.getChildByID('endGameButton').addEventListener('click', function() {
+                console.log('game ended for player', self.player.id);
+                self.player.hand.forEach(card => card.destroy());
+                self.player.hand = [];
+                // signal that you have ended game, destroy all your cards and make your coins visible to other players
+            });
         });
 
         this.socket.on('reshuffleWarning', function() {

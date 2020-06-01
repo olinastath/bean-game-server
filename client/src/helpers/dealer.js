@@ -43,6 +43,7 @@ export default class Dealer {
             scene.coinCount = scene.add.text(window.innerWidth - 125, 150, [scene.player.coins]).setOrigin(0.5).setFontSize(25).setFontFamily('Bodoni Highlight').setColor('#fad550');
 
             scene.dashboard = scene.add.dom(window.innerWidth - 150, window.innerHeight / 2).setOrigin(0.5).createFromCache('dashboard');
+            utils.toggleDisplay(scene.dashboard.getChildByID('endGameButton'));
 
             scene.dashboard.getChildByID('harvestFieldButton').addEventListener('click', function() {
                 utils.resetHarvestFieldButtonDisplay(scene);
@@ -83,14 +84,14 @@ export default class Dealer {
         this.flipCards = function(deck) {
             scene.openCards.forEach(function(card) { card.destroy(); });
             scene.openCards = [];
-            scene.openCards.push(new Card(scene).render(window.innerWidth / 2 - 60, window.innerHeight / 2, deck[0], 0, 0.5));
-            scene.openCards.push(new Card(scene).render(window.innerWidth / 2 + 60, window.innerHeight / 2, deck[1], 0, 0.5));
+            deck.splice(0, 2).forEach(function(card, i) {
+                scene.openCards.push(new Card(scene).render(window.innerWidth / 2 - 60 + (120 * i), window.innerHeight / 2, card, 0, 0.5));
+            })
             scene.openCards.forEach(function(card) {
                 if (!card.scene) card.scene = scene;
                 card.setInteractive();
                 scene.input.setDraggable(card);
             });
-            deck.splice(0, 2);
             scene.deck.disableInteractive();
             scene.socket.emit('updateDeck', deck);
             scene.socket.emit('updateOpenCards', scene.openCards);
