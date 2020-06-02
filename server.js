@@ -173,6 +173,10 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('disableTradingWithPlayer');
     });
 
+    socket.on('gameEndedForPlayer', function(playerId, score) {
+        socket.broadcast.emit('gameEndedForPlayer', playerId, score);
+    });
+
     socket.on('disconnect', function() {
         console.log('A user disconnected: ' + socket.id);
         playersArray = playersArray.filter(player => player != socket.id);

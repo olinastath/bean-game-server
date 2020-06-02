@@ -65,8 +65,6 @@ export default class Game extends Phaser.Scene {
             ],
             order: 0
         }
-
-        // this.fieldZoneOutline = this.zone.renderOutline(this.player.fieldZone);
         
         this.rounds = 0;
         this.numberOfPlayers = 0;
@@ -150,7 +148,6 @@ export default class Game extends Phaser.Scene {
 
         this.socket.on('startTurn', function(nextPlayerIndex) {
             self.turn.plant();
-            // emit to end turn
         });
 
         this.socket.on('updatePlayerTurn', function(playerId) {
@@ -224,22 +221,6 @@ export default class Game extends Phaser.Scene {
             self.turn.disableTradeFromHand();
         });
 
-        this.socket.on('gameEndingWarning', function() {
-            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDING_WARNING);
-        });
-
-        this.socket.on('gameEnded', function() {
-            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDED);
-            // enable end game button
-            utils.toggleDisplay(self.dashboard.getChildByID('endGameButton'));
-            self.dashboard.getChildByID('endGameButton').addEventListener('click', function() {
-                console.log('game ended for player', self.player.id);
-                self.player.hand.forEach(card => card.destroy());
-                self.player.hand = [];
-                // signal that you have ended game, destroy all your cards and make your coins visible to other players
-            });
-        });
-
         this.socket.on('reshuffleWarning', function() {
             window.alert(config.CONSTANTS.ALERT_MESSAGES.RESHUFFLE_WARNING);
         });
@@ -256,12 +237,32 @@ export default class Game extends Phaser.Scene {
             self.discardPile.list.forEach( (discardedCard) => discardedCard.destroy());
             self.discardPile.list = [];
         });
+
+        this.socket.on('gameEndingWarning', function() {
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDING_WARNING);
+        });
+
+        this.socket.on('gameEnded', function() {
+            window.alert(config.CONSTANTS.ALERT_MESSAGES.GAME_ENDED);
+            utils.toggleDisplay(self.dashboard.getChildByID('endGameButton'));
+            self.dashboard.getChildByID('endGameButton').addEventListener('click', function() {
+                console.log('game ended for player', self.player.id);
+                self.player.hand.forEach(card => card.destroy());
+                self.player.hand = [];
+                self.dashboard.destroy();
+                self.socket.emit('gameEndedForPlayer', self.player.id, self.player.coins);
+            });
+        });
+
+        this.socket.on('gameEndedForPlayer', function(playerId, score) {
+            console.log(self.otherPlayers[playerId]);
+            self.otherPlayers[playerId].fields.forEach(field => {
+                field.placemat.destroy();
+                field.counterText.destroy();
+                field.cards.forEach(card => card.destroy());
+            });
+            self.add.image(self.otherPlayers[playerId].fields[0].x + 70, 70, 'coin').setOrigin(0.5, 0).setScale(0.15);
+            self.add.text(self.otherPlayers[playerId].fields[0].x + 70, 150, [score]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
+        });
     }
-
-    // updated every frame
-    // if you want to detect input or do things that happen all the time or want the computer to be watching for actions throughout the game
-    update() {
-
-    }
-
 }

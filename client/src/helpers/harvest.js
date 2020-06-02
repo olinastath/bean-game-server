@@ -86,7 +86,8 @@ export default class Harvest {
                 field.cardCount--;
             }
             // field.cards.splice(0, cardsDiscarding);
-            scene.coinCount.setText(parseInt(scene.coinCount['_text'], 10) + coins);
+            scene.player.coins += coins;
+            scene.coinCount.setText(scene.player.coins);
             field.counterText.setText(field.cardCount);
             if (emptyField) {
                 field.fieldType = config.CONSTANTS.EMPTY_FIELD;

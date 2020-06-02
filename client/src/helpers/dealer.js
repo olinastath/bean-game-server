@@ -63,8 +63,8 @@ export default class Dealer {
             for (let player in scene.otherPlayers) {
                 if (player != scene.player.id) {
                     scene.add.text(120 + 200 * i, 30, [scene.otherPlayers[player].name]).setOrigin(0.5).setFontSize(18).setFontFamily('Bodoni Highlight').setColor('#fad550');
-                    scene.add.image(50 + 200 * i, 50, 'field').setOrigin(0, 0).setScale(0.15).setInteractive();
-                    scene.add.image(125 + 200 * i, 50, 'field').setOrigin(0, 0).setScale(0.15).setInteractive();
+                    scene.otherPlayers[player].fields[0].placemat = scene.add.image(50 + 200 * i, 50, 'field').setOrigin(0, 0).setScale(0.15).setInteractive();
+                    scene.otherPlayers[player].fields[1].placemat = scene.add.image(125 + 200 * i, 50, 'field').setOrigin(0, 0).setScale(0.15).setInteractive();
 
                     scene.otherPlayers[player].fields[0].x = 50 + 200 * i;
                     scene.otherPlayers[player].fields[0].y = 50;
@@ -76,6 +76,7 @@ export default class Dealer {
                     scene.otherPlayers[player].fields[0].cards = [];
 
                     scene.otherPlayers[player].fieldZone = scene.zone.renderZone(120 + 200 * i, 95, 175, 175, player);
+                    console.log(scene.otherPlayers[player]);
                 }
                 i++;
             }
