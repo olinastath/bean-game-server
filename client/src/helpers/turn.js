@@ -198,7 +198,7 @@ export default class Turn {
                 self.dropOnDiscard(gameObject);
             } else if (scene.phase === 3 && dropZone.name === scene.playerTurn.id) {
                 self.dropToTradeFromHand(gameObject, dropZone.name);
-            } else { // need to add checks to see if it's allowed to be traded
+            } else if (scene.otherPlayers[dropZone.name]){
                 self.dropToTradeFromDeck(gameObject, dropZone.name);
             }
         });
