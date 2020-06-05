@@ -8,6 +8,12 @@ module.exports = merge(base, {
   output: {
     filename: "bundle.min.js"
   },
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    port: process.env.PORT || 3000,
+    host: 'https://bean-game-client.herokuapp.com'
+  },
   devtool: false,
   performance: {
     maxEntrypointSize: 900000,
