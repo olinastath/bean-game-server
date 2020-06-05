@@ -7,7 +7,7 @@ module.exports = {
   mode: "development",
   devServer: {
     port: process.env.PORT || 3000,
-    host: 'bean-game-client.herokuapp.com'
+    host: process.env.HOST || 'localhost'
   },
   devtool: "eval-source-map",
   module: {
