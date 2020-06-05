@@ -185,6 +185,7 @@ io.on('connection', function(socket) {
     });
 });
 
-server.listen(2000, function() {
-    console.log("Listening on port 2000");
+const PORT = process.env.PORT || 2000;
+server.listen(PORT, function() {
+    console.log(`Listening on port ${PORT}`);
 });
