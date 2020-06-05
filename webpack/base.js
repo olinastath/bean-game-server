@@ -6,8 +6,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   mode: "development",
   devServer: {
-    port: process.env.PORT || 3000,
-    host: 'https://bean-game-client.herokuapp.com'
+    port: process.env.PORT || 3000
   },
   devtool: "eval-source-map",
   module: {
