@@ -150,6 +150,22 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('updateOpenCards', openCards);
     });
 
+    socket.on('updateCoinStack', function(player) {
+        let asset;
+        if (player.coins > 24) {
+            asset = 'coinStack4';
+        } else if (player.coins > 16) {
+            asset = 'coinStack3';
+        } else if (player.coins > 8) {
+            asset = 'coinStack2';
+        } else if (player.coins > 0) {
+            asset = 'coinStack1';
+        } else {
+            return;
+        }
+        socket.broadcast.emit('updateCoinStack', player.id, asset);
+    });
+
     socket.on('cardPlayed', function(gameObject, player) {
         socket.broadcast.emit('cardPlayed', gameObject, player);
     });
