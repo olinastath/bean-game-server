@@ -95,6 +95,9 @@ io.on('connection', function(socket) {
     });
 
     socket.on('updateDeck', function(updatedDeck) {
+        console.log("updated deck length:", updatedDeck.length);
+        console.log(updatedDeck);
+        console.log("\n");
         deck = updatedDeck;
         if (rounds === 3 && deck.length <= (playersArray.length * 5) && !gameEndingWarning) {
             // this is the last round, check length and send warning
@@ -172,11 +175,22 @@ io.on('connection', function(socket) {
 
     socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint = null, addToDiscardPile = true, fieldIndex, emptyField) {
         if (addToDiscardPile) discardPile.push(cardDiscarded);
+        console.log("discard pile length:", discardPile.length);
+        console.log(discardPile);
+        console.log("\n");
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
-    socket.on('tradeCard', function(gameObject, player) {
-        io.to(player).emit('cardTraded', gameObject);
+    socket.on('tradeCard', function(gameObject, fromPlayer, toPlayer, fromDeck, fromHand, index) {
+        io.to(toPlayer).emit('requestTrade', gameObject, fromPlayer, fromDeck, fromHand, index);
+    });
+
+    socket.on('rejectTrade', function(playerRejectingTrade, playerInitiatingTrade, gameObject, fromDeck, fromHand, index) {
+        io.to(playerInitiatingTrade).emit('tradeRejected', playerRejectingTrade, gameObject, fromDeck, fromHand, index);
+    });
+
+    socket.on('acceptTrade', function(playerAcceptingTrade, gameObject) {
+        io.to(playerAcceptingTrade).emit('cardTraded', gameObject);
     });
 
     socket.on('enableTrades', function(player) {
