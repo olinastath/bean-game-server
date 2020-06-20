@@ -72,7 +72,8 @@ io.on('connection', function(socket) {
         fields: [
             {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []},
             {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []}
-        ]
+        ],
+        order: playersArray.length
     }
 
     if (0 < playersArray.length < 8) {
@@ -156,17 +157,17 @@ io.on('connection', function(socket) {
     socket.on('updateCoinStack', function(player) {
         let asset;
         if (player.coins > 24) {
-            asset = 'coinStack4';
+            asset = 'coin-stack-4';
         } else if (player.coins > 16) {
-            asset = 'coinStack3';
+            asset = 'coin-stack-3';
         } else if (player.coins > 8) {
-            asset = 'coinStack2';
+            asset = 'coin-stack-2';
         } else if (player.coins > 0) {
-            asset = 'coinStack1';
+            asset = 'coin-stack-1';
         } else {
             return;
         }
-        socket.broadcast.emit('updateCoinStack', player.id, asset);
+        socket.broadcast.emit('updateCoinStack', player.id, `../src/assets/images/${asset}.png`);
     });
 
     socket.on('cardPlayed', function(gameObject, player) {
@@ -181,8 +182,8 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
-    socket.on('tradeCard', function(gameObject, fromPlayer, toPlayer, fromDeck, fromHand, index) {
-        io.to(toPlayer).emit('requestTrade', gameObject, fromPlayer, fromDeck, fromHand, index);
+    socket.on('tradeCard', function(gameObject, playerInitiatingTrade, playerAcceptingTrade, fromDeck, fromHand, index) {
+        io.to(playerAcceptingTrade).emit('requestTrade', gameObject, playerInitiatingTrade, fromDeck, fromHand, index);
     });
 
     socket.on('rejectTrade', function(playerRejectingTrade, playerInitiatingTrade, gameObject, fromDeck, fromHand, index) {
