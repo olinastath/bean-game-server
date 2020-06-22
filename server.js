@@ -81,7 +81,6 @@ io.on('connection', function(socket) {
 
     if (0 < playersArray.length < 8) {
         socket.emit('newPlayer', playersArray.length);
-        // io.emit('playerChange', playersArray.length, playersObject);
         console.log(playersArray);
     }
 
