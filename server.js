@@ -77,6 +77,8 @@ io.on('connection', function(socket) {
         order: playersArray.length
     }
 
+    io.to(playersArray[0]).emit('vipPlayer');
+
     if (0 < playersArray.length < 8) {
         socket.emit('newPlayer', playersArray.length);
         io.emit('playerChange', playersArray.length, playersObject);
