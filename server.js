@@ -60,6 +60,7 @@ let reshuffleWarning = false;
 let reshuffleSuccess = false;
 let deck = [];
 let discardPile = [];
+let tradeAlertsOn = false;
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
@@ -182,17 +183,23 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
-    socket.on('tradeCard', function(gameObject, playerInitiatingTrade, playerAcceptingTrade, fromDeck, fromHand, index) {
-        io.to(playerAcceptingTrade).emit('requestTrade', gameObject, playerInitiatingTrade, fromDeck, fromHand, index);
-    });
-
-    socket.on('rejectTrade', function(playerRejectingTrade, playerInitiatingTrade, gameObject, fromDeck, fromHand, index) {
-        io.to(playerInitiatingTrade).emit('tradeRejected', playerRejectingTrade, gameObject, fromDeck, fromHand, index);
-    });
-
-    socket.on('acceptTrade', function(playerAcceptingTrade, gameObject) {
-        io.to(playerAcceptingTrade).emit('cardTraded', gameObject);
-    });
+    if (tradeAlertsOn) {
+        socket.on('tradeCard', function(gameObject, playerInitiatingTrade, playerAcceptingTrade, fromDeck, fromHand, index) {
+            io.to(playerAcceptingTrade).emit('requestTrade', gameObject, playerInitiatingTrade, fromDeck, fromHand, index);
+        });
+    
+        socket.on('rejectTrade', function(playerRejectingTrade, playerInitiatingTrade, gameObject, fromDeck, fromHand, index) {
+            io.to(playerInitiatingTrade).emit('tradeRejected', playerRejectingTrade, gameObject, fromDeck, fromHand, index);
+        });
+    
+        socket.on('acceptTrade', function(playerAcceptingTrade, gameObject) {
+            io.to(playerAcceptingTrade).emit('cardTraded', gameObject);
+        });
+    } else {
+        socket.on('tradeCard', function(gameObject, playerInitiatingTrade, playerAcceptingTrade, fromDeck, fromHand, index) {
+            io.to(playerAcceptingTrade).emit('cardTraded', gameObject);
+        });
+    }
 
     socket.on('enableTrades', function(player) {
         // emit to everyone else that they can now trade with player 
