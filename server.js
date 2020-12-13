@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {pingInterval: 10000, pingTimeout: 60000});
 app.use(express.static('public'));
 
 const generateDeck = function(numberOfPlayers) {
@@ -84,6 +84,10 @@ io.on('connection', function(socket) {
         console.log(playersArray);
     }
 
+    socket.on('pong', function(playerName){
+        console.log("Pong received from player " + playerName);
+    });
+
     socket.on('newPlayerName', function(socketId, player) {
         playersObject[socketId].name = player.name;
         io.emit('playerChange', playersArray.length, playersObject);
@@ -97,9 +101,9 @@ io.on('connection', function(socket) {
     });
 
     socket.on('updateDeck', function(updatedDeck) {
-        console.log("updated deck length:", updatedDeck.length);
-        console.log(updatedDeck);
-        console.log("\n");
+        // console.log("updated deck length:", updatedDeck.length);
+        // console.log(updatedDeck);
+        // console.log("\n");
         deck = updatedDeck;
         if (rounds === 3 && deck.length <= (playersArray.length * 5) && !gameEndingWarning) {
             // this is the last round, check length and send warning
@@ -177,9 +181,9 @@ io.on('connection', function(socket) {
 
     socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint = null, addToDiscardPile = true, fieldIndex, emptyField) {
         if (addToDiscardPile) discardPile.push(cardDiscarded);
-        console.log("discard pile length:", discardPile.length);
-        console.log(discardPile);
-        console.log("\n");
+        // console.log("discard pile length:", discardPile.length);
+        // console.log(discardPile);
+        // console.log("\n");
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
@@ -222,6 +226,13 @@ io.on('connection', function(socket) {
         io.emit('playerChange', playersArray.length, playersObject);
     });
 });
+
+function sendHeartbeat(){
+    setTimeout(sendHeartbeat, 8000);
+    io.sockets.emit('ping');
+}
+
+setTimeout(sendHeartbeat, 8000);
 
 const PORT = process.env.PORT || 2000;
 server.listen(PORT, function() {
