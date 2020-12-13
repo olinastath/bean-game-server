@@ -9,3 +9,5 @@ On home directory, run `npm install`.
 
 ## Running the project
 On home directory run `npm start`. The server is now running on http://localhost:2000  
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y225QO7)
