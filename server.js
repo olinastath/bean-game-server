@@ -64,6 +64,7 @@ let tradeAlertsOn = false;
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
+    console.log(socket.handshake);
     playersArray.push(socket.id);
     playersObject[socket.id] = {
         id: socket.id,
