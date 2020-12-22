@@ -41,18 +41,9 @@ const shuffleDeck = function(deck) {
     return deck;
 }
 
-const getPlayersExcept = function(playerToExclude) {
-    let players = {};
-    for (let player in playersObject) {
-        if (player !== playerToExclude) {
-            players[player] = playersObject[player];
-        }
-    }
-    return players;
-}
-
 let playersArray = [];
 let playersObject = {};
+let ipAddressToSocketId = {};
 let rounds = 0;
 let gameEndingWarning = false;
 let gameEnded = false;
@@ -63,21 +54,33 @@ let discardPile = [];
 let tradeAlertsOn = false;
 
 io.on('connection', function(socket) {
-    console.log('A user connected: ' + socket.id);
-    console.log(socket.handshake);
-    playersArray.push(socket.id);
-    playersObject[socket.id] = {
-        id: socket.id,
-        name: '',
-        coins: 0,
-        fieldZone: null,
-        fields: [
-            {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []},
-            {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []}
-        ],
-        order: playersArray.length
+    let ipAddress = socket.request.headers['x-forwarded-for'];
+    let newId = socket.id;
+    console.log('A user connected - ID: ' + socket.id + ', IP: ' + ipAddress);
+    if (!ipAddressToSocketId[ipAddress]) { // truly a new player
+        ipAddressToSocketId[ipAddress] = newId;
+        playersArray.push(newId);
+        playersObject[newId] = {
+            id: newId,
+            name: '',
+            coins: 0,
+            fieldZone: null,
+            fields: [
+                {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []},
+                {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []}
+            ],
+            order: playersArray.length
+        }
+    } else { // a player that previously dropped is reconnecting
+        let oldId = ipAddressToSocketId[ipAddress];
+        console.log(oldId);
+        ipAddressToSocketId[ipAddress] = newId;
+        playersObject[newId] = playersObject[oldId];
+        delete playersObject[oldId];
+        playersObject[newId].id = newId;
+        playersArray.splice(playersArray.indexOf(oldId), 1, newId);
     }
-
+    
     io.to(playersArray[0]).emit('vipPlayer');
 
     if (0 < playersArray.length < 8) {
@@ -222,9 +225,10 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('A user disconnected: ' + socket.id);
-        playersArray = playersArray.filter(player => player != socket.id);
-        playersObject = getPlayersExcept(socket.id);
-        io.emit('playerChange', playersArray.length, playersObject);
+        // playersArray = playersArray.filter(player => player != socket.id);
+        // playersObject = getPlayersExcept(socket.id);
+        // delete playersObject[socket.id];
+        // io.emit('playerChange', playersArray.length, playersObject);
     });
 });
 
