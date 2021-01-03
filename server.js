@@ -51,17 +51,15 @@ let reshuffleWarning = false;
 let reshuffleSuccess = false;
 let deck = [];
 let discardPile = [];
-let tradeAlertsOn = false;
+let tradeAlertsOn = process.env.npm_config_trade_alerts_on || false;
+let isDev = process.env.npm_config_DEV_ENV || false;
 
 io.on('connection', function(socket) {
-    let ipAddress = socket.request.headers['x-forwarded-for'];
-    let newId = socket.id;
-    console.log('A user connected - ID: ' + socket.id + ', IP: ' + ipAddress);
-    if (!ipAddressToSocketId[ipAddress]) { // truly a new player
-        ipAddressToSocketId[ipAddress] = newId;
-        playersArray.push(newId);
-        playersObject[newId] = {
-            id: newId,
+    if (isDev) {
+        console.log('A user connected: ' + socket.id);
+        playersArray.push(socket.id);
+        playersObject[socket.id] = {
+            id: socket.id,
             name: '',
             coins: 0,
             fieldZone: null,
@@ -71,14 +69,33 @@ io.on('connection', function(socket) {
             ],
             order: playersArray.length
         }
-    } else { // a player that previously dropped is reconnecting
-        let oldId = ipAddressToSocketId[ipAddress];
-        console.log(oldId);
-        ipAddressToSocketId[ipAddress] = newId;
-        playersObject[newId] = playersObject[oldId];
-        delete playersObject[oldId];
-        playersObject[newId].id = newId;
-        playersArray.splice(playersArray.indexOf(oldId), 1, newId);
+    } else {
+        let ipAddress = socket.request.headers['x-forwarded-for'];
+        let newId = socket.id;
+        console.log('A user connected - ID: ' + socket.id + ', IP: ' + ipAddress);
+        if (!ipAddressToSocketId[ipAddress]) { // truly a new player
+            ipAddressToSocketId[ipAddress] = newId;
+            playersArray.push(newId);
+            playersObject[newId] = {
+                id: newId,
+                name: '',
+                coins: 0,
+                fieldZone: null,
+                fields: [
+                    {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []},
+                    {fieldType: 'empty', cardCount: 0, x: 0, y: 0, counterText: null, cards: []}
+                ],
+                order: playersArray.length
+            }
+        } else { // a player that previously dropped is reconnecting
+            let oldId = ipAddressToSocketId[ipAddress];
+            console.log('Old IP: ' + oldId);
+            ipAddressToSocketId[ipAddress] = newId;
+            playersObject[newId] = playersObject[oldId];
+            delete playersObject[oldId];
+            playersObject[newId].id = newId;
+            playersArray.splice(playersArray.indexOf(oldId), 1, newId);
+        }
     }
     
     io.to(playersArray[0]).emit('vipPlayer');
@@ -185,7 +202,7 @@ io.on('connection', function(socket) {
 
     socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint = null, addToDiscardPile = true, fieldIndex, emptyField) {
         if (addToDiscardPile) discardPile.push(cardDiscarded);
-        // console.log("discard pile length:", discardPile.length);
+        // console.log("add to pile: ", addToDiscardPile, "discard pile length:", discardPile.length);
         // console.log(discardPile);
         // console.log("\n");
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
@@ -225,10 +242,11 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('A user disconnected: ' + socket.id);
-        // playersArray = playersArray.filter(player => player != socket.id);
-        // playersObject = getPlayersExcept(socket.id);
-        // delete playersObject[socket.id];
-        // io.emit('playerChange', playersArray.length, playersObject);
+        if (isDev) {
+            playersArray = playersArray.filter(player => player != socket.id);
+            delete playersObject[socket.id];
+            io.emit('playerChange', playersArray.length, playersObject);
+        }
     });
 });
 

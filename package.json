@@ -1,12 +1,17 @@
 {
   "name": "bean-game-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express server for bean game client using socket.io",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start-dev": "npm run start --DEV_ENV"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olinastath/bean-game-server.git"
+  },
+  "author": "Olina Stathopoulou",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
