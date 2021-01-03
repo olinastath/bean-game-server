@@ -56,7 +56,7 @@ let isDev = process.env.npm_config_DEV_ENV || false;
 
 io.on('connection', function(socket) {
     if (isDev) {
-        console.log('A user connected: ' + socket.id);
+        console.log(`A user connected: ${socket.id}`);
         playersArray.push(socket.id);
         playersObject[socket.id] = {
             id: socket.id,
@@ -72,7 +72,7 @@ io.on('connection', function(socket) {
     } else {
         let ipAddress = socket.request.headers['x-forwarded-for'];
         let newId = socket.id;
-        console.log('A user connected - ID: ' + socket.id + ', IP: ' + ipAddress);
+        console.log(`A user connected - ID: ${socket.id}, IP: ${ipAddress}`);
         if (!ipAddressToSocketId[ipAddress]) { // truly a new player
             ipAddressToSocketId[ipAddress] = newId;
             playersArray.push(newId);
@@ -89,7 +89,7 @@ io.on('connection', function(socket) {
             }
         } else { // a player that previously dropped is reconnecting
             let oldId = ipAddressToSocketId[ipAddress];
-            console.log('Old IP: ' + oldId);
+            console.log(`Old IP: ${oldId}`);
             ipAddressToSocketId[ipAddress] = newId;
             playersObject[newId] = playersObject[oldId];
             delete playersObject[oldId];
@@ -106,7 +106,7 @@ io.on('connection', function(socket) {
     }
 
     socket.on('pong', function(playerName){
-        console.log("Pong received from player " + playerName);
+        console.log(`Pong received from player ${playerName}`);
     });
 
     socket.on('newPlayerName', function(socketId, player) {
@@ -115,16 +115,14 @@ io.on('connection', function(socket) {
     });
 
     socket.on('startGame', function() {
-        deck = shuffleDeck(generateDeck(playersArray.length));
+        deck = shuffleDeck(generateDeck(playersArray.length)).splice(0, 50);
         io.emit('startGame', deck);
         io.to(playersArray[0]).emit('dealCards', deck, 1);
         rounds = 1;
     });
 
     socket.on('updateDeck', function(updatedDeck) {
-        // console.log("updated deck length:", updatedDeck.length);
-        // console.log(updatedDeck);
-        // console.log("\n");
+        console.log(`updated deck length: ${updatedDeck.length}`);
         deck = updatedDeck;
         if (rounds === 3 && deck.length <= (playersArray.length * 5) && !gameEndingWarning) {
             // this is the last round, check length and send warning
@@ -202,9 +200,7 @@ io.on('connection', function(socket) {
 
     socket.on('cardDiscarded', function(cardDiscarded, player, entryPoint = null, addToDiscardPile = true, fieldIndex, emptyField) {
         if (addToDiscardPile) discardPile.push(cardDiscarded);
-        // console.log("add to pile: ", addToDiscardPile, "discard pile length:", discardPile.length);
-        // console.log(discardPile);
-        // console.log("\n");
+        // console.log(`add to pile: ${addToDiscardPile}, discard pile length: ${discardPile.length}`);
         socket.broadcast.emit('cardDiscarded', cardDiscarded, player, entryPoint, addToDiscardPile, fieldIndex, emptyField);
     });
 
@@ -241,7 +237,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function() {
-        console.log('A user disconnected: ' + socket.id);
+        console.log(`A user disconnected: ${socket.id}`);
         if (isDev) {
             playersArray = playersArray.filter(player => player != socket.id);
             delete playersObject[socket.id];
